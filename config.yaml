@@ -16,7 +16,7 @@ params:
     address:
       - city: London
         country: United Kingdom
-        street: Flat 2, Paddington Street
+#        street: Paddington Street
         title: Address
     buttonClear: Clear
     buttonSend: Send message
