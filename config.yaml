@@ -7,16 +7,16 @@ disqusShortname: ''
 params:
   banner:
     buttonText: Get Started
-#    subtitle: |-
+    subtitle: Portfolio website 
 #      A RESPONSIVE SITE TEMPLATE DESIGNED BY HTML5 UP
 #      AND RELEASED UNDER THE CREATIVE COMMONS.
-    title: Hi, my name is Piotr Rudniak
+    title: Hello, my name is Piotr Rudniak
   blog: {}
   contact:
     address:
       - city: London
         country: United Kingdom
-#        street: Paddington Street
+#       street: Paddington Street
         title: Address
     buttonClear: Clear
     buttonSend: Send message
@@ -35,7 +35,7 @@ params:
     text: Please visit [this page](/)
   favicon: favicon.ico
   footer:
-    copyright: Company Name
+    copyright: LBS
     enable: yes
     quicklinks:
       - alt: HTML5 UP
@@ -81,17 +81,17 @@ params:
   tiles:
     enable: yes
     showcase:
-      - image: pic01.jpg
-        subtitle: Ipsum Dolor Sit Amet
-        title: Aliquam
+      - image: lbs.jpg
+        subtitle: Brief introduction
+        title: About me
         url: blogs/aliquam
       - image: pic02.jpg
-        subtitle: Feugiat Amet Tempus
-        title: Tempus
+        #subtitle: Feugiat Amet Tempus
+        title: My CV
         url: blogs/tempus
       - image: pic03.jpg
-        subtitle: Lorem Etiam Nullam
-        title: Magna
+        subtitle: Exploratory data analysis
+        title: Brexit vote analysis
         url: blogs/magna
       - image: pic04.jpg
         subtitle: Nisl Sed Aliquam
@@ -114,5 +114,5 @@ params:
       pellentesque lorem ipsum dolor. \r\n    Nullam et orci eu lorem consequat tincidunt.
       Vivamus et sagittis libero.\r\n    Mauris aliquet magna magna sed nunc rhoncus
       amet pharetra et feugiat tempus."
-    title: Massa libero
+    title: Website description
     url: blogs
