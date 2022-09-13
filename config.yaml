@@ -11,7 +11,6 @@ params:
 #      A RESPONSIVE SITE TEMPLATE DESIGNED BY HTML5 UP
 #      AND RELEASED UNDER THE CREATIVE COMMONS.
     title: Welcome to my portfolio website!
-    background_img: banner.jpg
   blog: {}
   contact:
     address:
@@ -85,8 +84,8 @@ params:
       - image: Piotr_pic.jpg
         subtitle: Brief introduction
         title: About me
-        url: blogs/risk_return
-      - image: pic02.jpg
+        url: blogs/about_me
+      - image: pic_p01.JPEG
         subtitle: Download
         title: My CV
         url: "blogs/PiotrRudniak_resume.pdf"
