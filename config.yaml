@@ -7,10 +7,11 @@ disqusShortname: ''
 params:
   banner:
     buttonText: Get Started
-    subtitle: Portfolio website 
+    subtitle: Piotr Rudniak 
 #      A RESPONSIVE SITE TEMPLATE DESIGNED BY HTML5 UP
 #      AND RELEASED UNDER THE CREATIVE COMMONS.
-    title: Hello, my name is Piotr Rudniak
+    title: Welcome to my portfolio website!
+    background_img: banner.jpg
   blog: {}
   contact:
     address:
@@ -63,32 +64,32 @@ params:
     button1:
       - name: Get Started
         url: blogs
-    button2:
-      - name: Log In
-        url: '#'
+#    button2:
+#      - name: Log In
+#        url: '#'
     links:
       - name: Home
         url: '#'
-      - name: Blogs
+      - name: My projects
         url: blogs
-      - name: Generic Blog
-        url: blogs/ipsum
+#      - name: Generic Blog
+#        url: blogs/ipsum
       - name: Elements
         url: elements.html
     menu: Menu
-    subtitle: By HTML5 Up
-    title: Forty
+#    subtitle: By HTML5 Up
+    title: Home
   tiles:
     enable: yes
     showcase:
-      - image: lbs.jpg
+      - image: Piotr_pic.jpg
         subtitle: Brief introduction
         title: About me
         url: blogs/risk_return
       - image: pic02.jpg
-        #subtitle: Feugiat Amet Tempus
+        subtitle: Download
         title: My CV
-        url: blogs/tempus
+        url: "blogs/PiotrRudniak_resume.pdf"
       - image: pic03.jpg
         subtitle: Exploratory data analysis
         title: Brexit vote analysis
