@@ -1,0 +1,33 @@
+---
+categories:  
+- ""   
+- ""
+date: "2022-09-13"
+description: About me 
+draft: false
+image: pic_p03.jpg 
+
+keywords: ""
+slug: about_me_v01 
+title: About me
+---
+
+```{r, setup, echo=FALSE}
+knitr::opts_chunk$set(
+  message = FALSE, 
+  warning = FALSE, 
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+options(digits = 3)
+
+# default figure size
+knitr::opts_chunk$set(
+  fig.width=6.75, 
+  fig.height=6.75,
+  fig.align = "center"
+)
+```
+
+# [**Section about me**]{.underline}
+
+![](/img/blogs/pic_p02.jpg)
