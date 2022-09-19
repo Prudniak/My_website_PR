@@ -28,6 +28,14 @@ knitr::opts_chunk$set(
 )
 ```
 
-# [**Section about me**]{.underline}
+(Picture of me in front of my summer house near Warsaw)
+
+# [Life in Warsaw]{.underline}
+
+# [Bachelor's degree at Warsaw School of Economics]{.underline}
 
 ![](/img/blogs/pic_p02.jpg)
+
+(Picture of me sailing in the Mazurian Lakes region in Poland)
+
+# [Professional life and the future...]{.underline}
