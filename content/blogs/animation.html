@@ -1,0 +1,281 @@
+---
+categories:  
+- ""   
+- ""
+date: "2022-09-13"
+description: See how I created animation in R!
+draft: false
+image: pic_p07.JPEG
+keywords: ""
+slug: animation 
+title: Making animation based on emissions dataset
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+
+
+<div id="dataset-introduction" class="section level2">
+<h2>Dataset introduction</h2>
+<p>The National Bureau of Economic Research (NBER) has a a very interesting
+dataset on the adoption of about 200 technologies in more than 150
+countries since 1800. This is the <a href="https://www.nber.org/research/data/cross-country-historical-adoption-technology">Cross-country Historical Adoption of
+Technology (CHAT)
+dataset</a>.</p>
+<p>The following is a description of the variables:</p>
+<table>
+<thead>
+<tr class="header">
+<th><strong>variable</strong></th>
+<th><strong>class</strong></th>
+<th><strong>description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>variable</td>
+<td>character</td>
+<td>Variable name</td>
+</tr>
+<tr class="even">
+<td>label</td>
+<td>character</td>
+<td>Label for variable</td>
+</tr>
+<tr class="odd">
+<td>iso3c</td>
+<td>character</td>
+<td>Country code</td>
+</tr>
+<tr class="even">
+<td>year</td>
+<td>double</td>
+<td>Year</td>
+</tr>
+<tr class="odd">
+<td>group</td>
+<td>character</td>
+<td>Group (consumption/production)</td>
+</tr>
+<tr class="even">
+<td>category</td>
+<td>character</td>
+<td>Category</td>
+</tr>
+<tr class="odd">
+<td>value</td>
+<td>double</td>
+<td>Value (related to label)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="data-cleaning" class="section level2">
+<h2>Data cleaning</h2>
+<pre class="r"><code>technology &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-07-19/technology.csv&#39;)
+
+#get all technologies
+labels &lt;- technology %&gt;% 
+  distinct(variable, label)
+
+# Get country names using &#39;countrycode&#39; package
+technology &lt;- technology %&gt;% 
+  filter(iso3c != &quot;XCD&quot;) %&gt;% 
+  mutate(iso3c = recode(iso3c, &quot;ROM&quot; = &quot;ROU&quot;),
+         country = countrycode(iso3c, origin = &quot;iso3c&quot;, destination = &quot;country.name&quot;),
+         country = case_when(
+           iso3c == &quot;ANT&quot; ~ &quot;Netherlands Antilles&quot;,
+           iso3c == &quot;CSK&quot; ~ &quot;Czechoslovakia&quot;,
+           iso3c == &quot;XKX&quot; ~ &quot;Kosovo&quot;,
+           TRUE           ~ country))
+
+#make smaller dataframe on energy
+energy &lt;- technology %&gt;% 
+  filter(category == &quot;Energy&quot;)
+
+# download CO2 per capita from World Bank using {wbstats} package
+# https://data.worldbank.org/indicator/EN.ATM.CO2E.PC
+co2_percap &lt;- wb_data(country = &quot;countries_only&quot;, 
+                      indicator = &quot;EN.ATM.CO2E.PC&quot;, 
+                      start_date = 1970, 
+                      end_date = 2022,
+                      return_wide=FALSE) %&gt;% 
+  filter(!is.na(value)) %&gt;% 
+  #drop unwanted variables
+  select(-c(unit, obs_status, footnote, last_updated))
+
+# get a list of countries and their characteristics
+# we just want to get the region a country is in and its income level
+countries &lt;-  wb_cachelist$countries %&gt;% 
+  select(iso3c,region,income_level)</code></pre>
+</div>
+<div id="creating-of-a-graph-with-the-countries-with-the-highest-and-lowest-contribution-of-renewables-in-energy-production." class="section level2">
+<h2>Creating of a graph with the countries with the highest and lowest % contribution of renewables in energy production.</h2>
+<pre class="r"><code>energy &lt;- energy %&gt;% 
+  
+  #filteting out the NAs
+  filter(!is.na(value))</code></pre>
+</div>
+<div id="top-20-countries-with-highest-contribution-of-renewables-in-energy-production" class="section level2">
+<h2>Top 20 countries with highest % contribution of renewables in energy production</h2>
+<pre class="r"><code>top_res &lt;- energy %&gt;% 
+  
+  # dropping unnessecary columns
+  select(-c(label, iso3c, group, category)) %&gt;% 
+  
+  #pivoting dataset wider
+  pivot_wider(names_from = &quot;variable&quot;,
+              values_from = &quot;value&quot;) %&gt;% 
+  
+  #filtering year 2019
+  filter(year == 2019) %&gt;% 
+  
+  #grouping by country
+  group_by(country) %&gt;% 
+  
+  #calculating the % of renewables in energy production
+  summarise(total_res_perc = sum(elec_hydro, elec_solar, elec_wind, elec_renew_other)/ sum(elecprod)) %&gt;% 
+  
+  #arranging in descending order 
+  arrange(desc(total_res_perc)) %&gt;% 
+  
+  #choosing top 20 countries
+  head(20)</code></pre>
+</div>
+<div id="creating-plot-with-top-20-countries-with-highest-contribution-of-renewables-in-energy-production" class="section level2">
+<h2>Creating plot with Top 20 countries with highest % contribution of renewables in energy production</h2>
+<pre class="r"><code>top_res_plot &lt;- ggplot(top_res, 
+       aes(x = total_res_perc, 
+           y = fct_reorder(country, total_res_perc))) +
+  geom_col() +
+     labs(subtitle = &quot;Highest&quot;,
+       x = NULL, 
+       y = NULL) +
+  theme_light() +
+  theme(legend.position = &quot;none&quot;) +
+  scale_x_continuous(labels = scales::percent) +
+  NULL</code></pre>
+</div>
+<div id="top-20-countries-with-lowest-contribution-of-renewables-in-energy-production" class="section level2">
+<h2>Top 20 countries with lowest % contribution of renewables in energy production</h2>
+<pre class="r"><code>bot_res &lt;- energy %&gt;% 
+  
+  # dropping unnessecary columns
+  select(-c(label, iso3c, group, category)) %&gt;% 
+  
+  #pivoting dataset wider
+  pivot_wider(names_from = &quot;variable&quot;,
+              values_from = &quot;value&quot;) %&gt;% 
+  
+  #filtering year 2019
+  filter(year == 2019) %&gt;% 
+  
+  #grouping by country
+  group_by(country) %&gt;% 
+  
+  #calculating the % of renewables in energy production
+  summarise(total_res_perc = sum(elec_hydro, elec_solar, elec_wind, elec_renew_other)/ sum(elecprod)) %&gt;% 
+  
+  #arranging in ascending order 
+  arrange(total_res_perc) %&gt;% 
+  
+  #choosing top 20 countries
+  head(20)</code></pre>
+</div>
+<div id="creating-plot-with-top-20-countries-with-lowest-contribution-of-renewables-in-energy-production" class="section level2">
+<h2>Creating plot with Top 20 countries with lowest % contribution of renewables in energy production</h2>
+<pre class="r"><code>bot_res_plot &lt;- ggplot(bot_res, 
+       aes(x = total_res_perc, 
+           y = fct_reorder(country, total_res_perc))) +
+  geom_col() +
+     labs(subtitle = &quot;Lowest&quot;,
+       x = NULL, 
+       y = NULL) +
+  theme_light() +
+  theme(legend.position = &quot;none&quot;) +
+  scale_x_continuous(labels = scales::percent) +
+  NULL</code></pre>
+</div>
+<div id="joining-two-plots-together-with-patchwork" class="section level2">
+<h2>Joining two plots together with ‘patchwork’</h2>
+<pre class="r"><code>res_plot &lt;- top_res_plot / bot_res_plot + 
+  plot_annotation(title = &quot;Highest and lowest % of renewables in energy production&quot;,
+                  subtitle = &quot;2019 data&quot;,
+                  caption = &quot;Source: NBER CHAT Database&quot;) 
+
+res_plot</code></pre>
+<p><img src="/blogs/animation_files/figure-html/joining_plots-1.png" width="648" style="display: block; margin: auto;" /></p>
+</div>
+<div id="creating-an-animation-to-explore-the-relationship-between-co2-per-capita-emissions-and-the-deployment-of-renewables." class="section level2">
+<h2>Creating an animation to explore the relationship between CO2 per capita emissions and the deployment of renewables.</h2>
+<pre class="r"><code>#cleaning energy dataset
+energy_1 &lt;- energy %&gt;% 
+  
+  #removing not needed columns
+  select(-c(label, group, category)) %&gt;% 
+  
+  #pivoting data wider
+  pivot_wider(names_from = &quot;variable&quot;,
+              values_from = &quot;value&quot;) %&gt;% 
+  
+  #Left-joining data 
+  left_join(y = countries, by = &quot;iso3c&quot;) %&gt;% 
+  
+  #removing not needed columns
+  select(-c(region))
+
+
+#cleaning emissions dataset
+co2_percap_new &lt;- co2_percap %&gt;%  
+  
+  #renaming columns
+  rename(CO2_emissions = &quot;value&quot;,
+         year = &quot;date&quot;) %&gt;%
+  
+  #selecting necessary columns
+  select(iso3c, year, CO2_emissions) 
+
+#Left-joining energy_1 and co2_percap_new datasets
+energy_new &lt;- left_join(energy_1, co2_percap_new, by = c(&quot;iso3c&quot; = &quot;iso3c&quot;, &quot;year&quot; = &quot;year&quot;))</code></pre>
+<pre class="r"><code>energy_plot &lt;- energy_new %&gt;% 
+  
+  #filtering year &amp; NAs
+  filter(year &gt;= 1991) %&gt;% 
+  filter(!is.na(income_level)) %&gt;% 
+  
+  #grouping by country and year
+  group_by(country, year, income_level) %&gt;% 
+  
+  #calculating the % of renewables in energy production
+  summarise(total_res_perc = sum(elec_hydro, elec_solar, elec_wind, elec_renew_other)/ sum(elecprod),
+        emissions = CO2_emissions) 
+
+#creating plot
+p &lt;- ggplot(energy_plot, 
+       aes(x = total_res_perc,
+           y = emissions,
+           color = income_level)) +
+  geom_point() +
+  labs(title = &#39;Year: {as.integer(frame_time)}&#39;, 
+           x = &#39;% of renewables&#39;, 
+           y = &#39;CO2 per cap&#39;,
+       caption = &quot;Source: NBER CHAT Database&quot;) +
+  transition_time(year) +
+  ease_aes(&#39;linear&#39;) +
+  facet_wrap(~income_level, ncol = 2) +
+  theme_bw() +
+  theme(legend.position = &quot;none&quot;) +
+  scale_x_continuous(labels = scales::percent) +
+  NULL
+
+  
+animate(p) </code></pre>
+<p><img src="/blogs/animation_files/figure-html/plotting-1.gif" style="display: block; margin: auto;" /></p>
+<blockquote>
+<p>In every income group, it seems that % of renewables in energy
+production is negatively correlated with the amount of CO2 emitted per
+capita. Therefore, investing in such energy sources could be leveraged
+to achieve net zero strategies by countries all over the world.</p>
+</blockquote>
+</div>

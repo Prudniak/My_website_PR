@@ -16,7 +16,7 @@ params:
     address:
       - city: London
         country: United Kingdom
-#       street: Paddington Street
+#       street: 
         title: Address
     buttonClear: Clear
     buttonSend: Send message
@@ -35,7 +35,7 @@ params:
     text: Please visit [this page](/)
   favicon: favicon.ico
   footer:
-    copyright: 
+    copyright: LBS
     enable: yes
     quicklinks:
       - alt: HTML5 UP
@@ -85,7 +85,7 @@ params:
         subtitle: Brief introduction
         title: About me
         url: blogs/about_me_v01
-      - image: pic_p01.JPEG
+      - image: pic_p05.jpg
         subtitle: Download
         title: My CV
         buttonCV: Download
@@ -94,10 +94,10 @@ params:
         subtitle: Exploratory data analysis
         title: Brexit vote analysis
         url: blogs/brexit
-      - image: pic04.jpg
+      - image: pic_p06.jpg
         subtitle: Emissions dataset
-        title: Creating animation
-        url: blogs/magna
+        title: Making animation
+        url: blogs/animation
 #      - image: pic05.jpg
 #        subtitle: Ipsum Dolor Sit Amet
 #        title: Consequat
