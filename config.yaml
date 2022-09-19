@@ -62,7 +62,7 @@ params:
   name: Your name
   navigation:
     button1:
-      - name: Get Started
+      - name: Take a look!
         url: blogs
 #    button2:
 #      - name: Log In
@@ -103,10 +103,10 @@ params:
         subtitle: Comprehensive analysis of weekly sales of US retailer
         title: Weekly sales analysis
         url: blogs/weekly
-#      - image: pic06.jpg
-#        subtitle: Feugiat Amet Tempus
-#        title: Etiam
-#        url: blogs/ipsum
+      - image: pic_p10.jpg
+        subtitle: Comparison of largest donors in 2016 US presidential elections
+        title: California donors 
+        url: blogs/contributors
   two:
     buttonText: List of my projects
     enable: yes

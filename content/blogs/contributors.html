@@ -1,0 +1,134 @@
+---
+categories:  
+- ""   
+- ""
+date: "2022-09-19"
+description: Comparison of largest donors in 2016 US presidential elections
+draft: false
+image: pic_p09.jpg 
+
+keywords: ""
+slug: contributors
+title: California contributors
+---
+
+
+
+<div id="california-contributors-plots" class="section level1">
+<h1>2016 California Contributors plots</h1>
+<p>Reproducing the plot that shows the top ten cities in highest amounts raised in political contributions in California during the 2016 US Presidential election.</p>
+<div id="merging-datasets" class="section level2">
+<h2>Merging datasets</h2>
+<pre class="r"><code># Make sure you use vroom() as it is significantly faster than read.csv()
+CA_contributors_2016 &lt;- vroom::vroom(here::here(&quot;data&quot;,&quot;CA_contributors_2016.csv&quot;))
+
+glimpse(CA_contributors_2016)</code></pre>
+<pre><code>## Rows: 1,292,843
+## Columns: 4
+## $ cand_nm           &lt;chr&gt; &quot;Clinton, Hillary Rodham&quot;, &quot;Clinton, Hillary Rodham&quot;…
+## $ contb_receipt_amt &lt;dbl&gt; 50.0, 200.0, 5.0, 48.3, 40.0, 244.3, 35.0, 100.0, 25…
+## $ zip               &lt;dbl&gt; 94939, 93428, 92337, 95334, 93011, 95826, 90278, 902…
+## $ contb_date        &lt;date&gt; 2016-04-26, 2016-04-20, 2016-04-02, 2016-11-21, 201…</code></pre>
+<pre class="r"><code>CA_zipcodes &lt;- vroom::vroom(here::here(&quot;data&quot;,&quot;zip_code_database.csv&quot;))
+
+glimpse(CA_zipcodes)</code></pre>
+<pre><code>## Rows: 42,522
+## Columns: 16
+## $ zip                  &lt;chr&gt; &quot;00501&quot;, &quot;00544&quot;, &quot;00601&quot;, &quot;00602&quot;, &quot;00603&quot;, &quot;006…
+## $ type                 &lt;chr&gt; &quot;UNIQUE&quot;, &quot;UNIQUE&quot;, &quot;STANDARD&quot;, &quot;STANDARD&quot;, &quot;STAN…
+## $ primary_city         &lt;chr&gt; &quot;Holtsville&quot;, &quot;Holtsville&quot;, &quot;Adjuntas&quot;, &quot;Aguada&quot;,…
+## $ acceptable_cities    &lt;chr&gt; NA, NA, NA, NA, &quot;Ramey&quot;, &quot;Ramey&quot;, NA, NA, NA, NA,…
+## $ unacceptable_cities  &lt;chr&gt; &quot;I R S Service Center&quot;, &quot;Irs Service Center&quot;, &quot;Co…
+## $ state                &lt;chr&gt; &quot;NY&quot;, &quot;NY&quot;, &quot;PR&quot;, &quot;PR&quot;, &quot;PR&quot;, &quot;PR&quot;, &quot;PR&quot;, &quot;PR&quot;, &quot;…
+## $ county               &lt;chr&gt; &quot;Suffolk County&quot;, &quot;Suffolk County&quot;, &quot;Adjuntas&quot;, N…
+## $ timezone             &lt;chr&gt; &quot;America/New_York&quot;, &quot;America/New_York&quot;, &quot;America/…
+## $ area_codes           &lt;dbl&gt; 631, 631, 787939, 787, 787, NA, NA, 787939, 787, …
+## $ latitude             &lt;dbl&gt; 40.8, 40.8, 18.2, 18.4, 18.4, 18.4, 18.4, 18.2, 1…
+## $ longitude            &lt;dbl&gt; -73.0, -73.0, -66.7, -67.2, -67.2, -67.2, -67.2, …
+## $ world_region         &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ country              &lt;chr&gt; &quot;US&quot;, &quot;US&quot;, &quot;US&quot;, &quot;US&quot;, &quot;US&quot;, &quot;US&quot;, &quot;US&quot;, &quot;US&quot;, &quot;…
+## $ decommissioned       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+## $ estimated_population &lt;dbl&gt; 384, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+## $ notes                &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, &quot;no NWS data,…</code></pre>
+<pre class="r"><code>#code from the workshop 1 slides
+CA_contributors_2016 &lt;- CA_contributors_2016 %&gt;% 
+  mutate(zip = as.character(zip))
+
+CA_contributors_2016 &lt;- left_join(CA_contributors_2016, CA_zipcodes, by=&quot;zip&quot;)
+
+glimpse(CA_contributors_2016)</code></pre>
+<pre><code>## Rows: 1,292,843
+## Columns: 19
+## $ cand_nm              &lt;chr&gt; &quot;Clinton, Hillary Rodham&quot;, &quot;Clinton, Hillary Rodh…
+## $ contb_receipt_amt    &lt;dbl&gt; 50.0, 200.0, 5.0, 48.3, 40.0, 244.3, 35.0, 100.0,…
+## $ zip                  &lt;chr&gt; &quot;94939&quot;, &quot;93428&quot;, &quot;92337&quot;, &quot;95334&quot;, &quot;93011&quot;, &quot;958…
+## $ contb_date           &lt;date&gt; 2016-04-26, 2016-04-20, 2016-04-02, 2016-11-21, …
+## $ type                 &lt;chr&gt; &quot;STANDARD&quot;, &quot;STANDARD&quot;, &quot;STANDARD&quot;, &quot;STANDARD&quot;, &quot;…
+## $ primary_city         &lt;chr&gt; &quot;Larkspur&quot;, &quot;Cambria&quot;, &quot;Fontana&quot;, &quot;Livingston&quot;, &quot;…
+## $ acceptable_cities    &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, &quot;Laguna Hills…
+## $ unacceptable_cities  &lt;chr&gt; NA, NA, NA, NA, NA, &quot;Walsh Station&quot;, NA, NA, NA, …
+## $ state                &lt;chr&gt; &quot;CA&quot;, &quot;CA&quot;, &quot;CA&quot;, &quot;CA&quot;, &quot;CA&quot;, &quot;CA&quot;, &quot;CA&quot;, &quot;CA&quot;, &quot;…
+## $ county               &lt;chr&gt; &quot;Marin County&quot;, &quot;San Luis Obispo County&quot;, &quot;San Be…
+## $ timezone             &lt;chr&gt; &quot;America/Los_Angeles&quot;, &quot;America/Los_Angeles&quot;, &quot;Am…
+## $ area_codes           &lt;dbl&gt; 4.16e+05, 8.05e+02, 9.10e+05, 2.09e+02, 8.05e+02,…
+## $ latitude             &lt;dbl&gt; 37.9, 35.6, 34.0, 37.3, 34.2, 38.5, 33.9, 33.9, 3…
+## $ longitude            &lt;dbl&gt; -123, -121, -117, -121, -119, -121, -118, -118, -…
+## $ world_region         &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ country              &lt;chr&gt; &quot;US&quot;, &quot;US&quot;, &quot;US&quot;, &quot;US&quot;, &quot;US&quot;, &quot;US&quot;, &quot;US&quot;, &quot;US&quot;, &quot;…
+## $ decommissioned       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+## $ estimated_population &lt;dbl&gt; 5652, 5624, 27988, 11811, 1879, 26728, 33427, 334…
+## $ notes                &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, &quot;no NWS data,…</code></pre>
+</div>
+<div id="transforming-data" class="section level2">
+<h2>Transforming data</h2>
+<pre class="r"><code>Hillary &lt;- CA_contributors_2016 %&gt;% 
+  filter(cand_nm == &quot;Clinton, Hillary Rodham&quot;) %&gt;% 
+  group_by(primary_city, cand_nm) %&gt;% 
+  summarise(total_contributions = sum(contb_receipt_amt)) %&gt;% 
+  arrange(desc(total_contributions)) %&gt;% 
+  head(10)
+    
+Hillary_plot &lt;- ggplot(Hillary, 
+       aes(x = total_contributions,
+           y = fct_reorder(primary_city, total_contributions))) +
+  geom_bar(stat=&#39;identity&#39;, fill = &quot;royalblue2&quot;) +
+  labs(
+    y = NULL,
+    x = NULL,
+  ) +
+  theme_bw() +
+  theme(legend.position=&quot;none&quot;) +
+  facet_wrap(~ cand_nm)
+
+Donald &lt;- CA_contributors_2016 %&gt;% 
+  filter(cand_nm == &quot;Trump, Donald J.&quot;) %&gt;% 
+  group_by(primary_city, cand_nm) %&gt;% 
+  summarise(total_contributions = sum(contb_receipt_amt)) %&gt;% 
+  arrange(desc(total_contributions)) %&gt;% 
+  head(10)
+    
+Donald_plot &lt;- ggplot(Donald, 
+       aes(x = total_contributions,
+           y = fct_reorder(primary_city, total_contributions))) +
+  geom_bar(stat=&#39;identity&#39;, fill = &quot;brown2&quot;) +
+  labs(
+    y = NULL,
+    x = NULL,
+  ) +
+  theme_bw() +
+  theme(legend.position=&quot;none&quot;) +
+  facet_wrap(~ cand_nm)</code></pre>
+</div>
+<div id="joining-plots-together" class="section level2">
+<h2>Joining plots together</h2>
+<pre class="r"><code>library(patchwork)
+
+plots &lt;- Hillary_plot + Donald_plot + plot_annotation(title = &quot;Where did candidates raise most money?&quot;) + plot_layout(widths = 2000)  #joining two plots using patchwork package
+
+
+# code taken from https://github.com/thomasp85/patchwork/issues/150 to add label on the x-axis between two plots
+gt &lt;- patchwork::patchworkGrob(plots)
+gridExtra::grid.arrange(gt, bottom = &quot;Amounts raised&quot;)</code></pre>
+<p><img src="/blogs/contributors_files/figure-html/joining_plots-1.png" width="648" style="display: block; margin: auto;" /></p>
+</div>
+</div>

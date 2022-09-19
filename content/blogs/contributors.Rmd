@@ -1,0 +1,132 @@
+---
+categories:  
+- ""   
+- ""
+date: "2022-09-19"
+description: Comparison of largest donors in 2016 US presidential elections
+draft: false
+image: pic_p09.jpg 
+
+keywords: ""
+slug: contributors
+title: California contributors
+---
+
+```{r, setup, echo=FALSE}
+knitr::opts_chunk$set(
+  message = FALSE, 
+  warning = FALSE, 
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+options(digits = 3)
+
+# default figure size
+knitr::opts_chunk$set(
+  fig.width=6.75, 
+  fig.height=6.75,
+  fig.align = "center"
+)
+```
+
+
+```{r load-libraries, warning=FALSE, message=FALSE, echo=FALSE}
+library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
+library(mosaic)
+library(ggthemes)
+library(lubridate)
+library(here)
+library(skimr)
+library(janitor)
+library(vroom)
+library(tidyquant)
+library(ggplot2)
+library(forcats)
+```
+
+
+# 2016 California Contributors plots
+
+Reproducing the plot that shows the top ten cities in highest amounts raised in political contributions in California during the 2016 US Presidential election.
+
+## Merging datasets
+
+```{r, load_CA_data, warnings= FALSE, message=FALSE}
+# Make sure you use vroom() as it is significantly faster than read.csv()
+CA_contributors_2016 <- vroom::vroom(here::here("data","CA_contributors_2016.csv"))
+
+glimpse(CA_contributors_2016)
+
+CA_zipcodes <- vroom::vroom(here::here("data","zip_code_database.csv"))
+
+glimpse(CA_zipcodes)
+
+#code from the workshop 1 slides
+CA_contributors_2016 <- CA_contributors_2016 %>% 
+  mutate(zip = as.character(zip))
+
+CA_contributors_2016 <- left_join(CA_contributors_2016, CA_zipcodes, by="zip")
+
+glimpse(CA_contributors_2016)
+```
+
+
+## Transforming data
+
+```{r, challenge_2, out.width="100%"}
+
+
+Hillary <- CA_contributors_2016 %>% 
+  filter(cand_nm == "Clinton, Hillary Rodham") %>% 
+  group_by(primary_city, cand_nm) %>% 
+  summarise(total_contributions = sum(contb_receipt_amt)) %>% 
+  arrange(desc(total_contributions)) %>% 
+  head(10)
+    
+Hillary_plot <- ggplot(Hillary, 
+       aes(x = total_contributions,
+           y = fct_reorder(primary_city, total_contributions))) +
+  geom_bar(stat='identity', fill = "royalblue2") +
+  labs(
+    y = NULL,
+    x = NULL,
+  ) +
+  theme_bw() +
+  theme(legend.position="none") +
+  facet_wrap(~ cand_nm)
+
+Donald <- CA_contributors_2016 %>% 
+  filter(cand_nm == "Trump, Donald J.") %>% 
+  group_by(primary_city, cand_nm) %>% 
+  summarise(total_contributions = sum(contb_receipt_amt)) %>% 
+  arrange(desc(total_contributions)) %>% 
+  head(10)
+    
+Donald_plot <- ggplot(Donald, 
+       aes(x = total_contributions,
+           y = fct_reorder(primary_city, total_contributions))) +
+  geom_bar(stat='identity', fill = "brown2") +
+  labs(
+    y = NULL,
+    x = NULL,
+  ) +
+  theme_bw() +
+  theme(legend.position="none") +
+  facet_wrap(~ cand_nm)
+```
+
+
+## Joining plots together
+
+``` {r joining_plots}
+library(patchwork)
+
+plots <- Hillary_plot + Donald_plot + plot_annotation(title = "Where did candidates raise most money?") + plot_layout(widths = 2000)  #joining two plots using patchwork package
+
+
+# code taken from https://github.com/thomasp85/patchwork/issues/150 to add label on the x-axis between two plots
+gt <- patchwork::patchworkGrob(plots)
+gridExtra::grid.arrange(gt, bottom = "Amounts raised")
+
+
+```
+
