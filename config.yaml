@@ -20,9 +20,6 @@ params:
         title: Address
     buttonClear: Clear
     buttonSend: Send message
-    action: "https://formspree.io/f/xlevjzlw"
-    method: "POST"
-    formEmail: "prudniak.mam2023@london.edu"
     email:
       - email: prudniak.mam2023@london.edu
         title: Email
@@ -30,7 +27,20 @@ params:
     phone:
       - phone: 	+44 7467275816
         title: Phone
-  custom_css: []
+  custom_css: [
+<form
+  action="https://formspree.io/f/xlevjzlw"
+  method="POST"
+>
+  <label>
+    Your email:
+    <input type="prudniak.mam2023@london.edu" name="email">
+  </label>
+  <label>
+    Your message:
+    <textarea name="message"></textarea>
+  </label>
+</form>]
   custom_js: []
   description: Your description
   error404:
